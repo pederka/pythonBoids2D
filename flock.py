@@ -1,18 +1,23 @@
-import random
 from boid import Boid
+from pred import Pred
+import random
 
 class Flock:
 
-  def __init__(self,number,sd=1337):
+  def __init__(self,number,sd=1337,predator=False):
     random.seed(sd)
     self.boids = []
+    self.predPresent = False
+    if predator:
+      self.predPresent = True
+      self.pred = Pred()
     for n in range(0,number):
-      x = random.random() 
-      y = random.random()
-      vx = random.random()*0.02
-      vy = random.random()*0.02
-      self.boids.append(Boid(x,y,vx,vy))
+      self.boids.append(Boid())
 
   def update(self):
+    # Move flock
     for n in range(0,len(self.boids)):
-      self.boids[n].update(self.boids)
+      self.boids[n].update(self.boids,self.pred)
+    # Move predator
+    if self.predPresent:
+      self.pred.update(self.boids)

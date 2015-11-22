@@ -1,21 +1,26 @@
 from math import sqrt
+from pred import Pred
+import random
 
 class Boid:
 
-  def __init__(self,x,y,vx,vy):
-    self.x = x
-    self.y = y
-    self.vx = vx
-    self.vy = vy
+  def __init__(self):
     # Parameters for boids
     self.r = 1.0 # Size of domain
     self.dd = 0.02 # Desired distance
     self.nd = 0.08 # neighbor distance
+    self.pd = 0.2 # predator distance
     self.maxspeed = 0.02
     self.maxforce = 0.02
     self.sepmult = 1.5
     self.almult = 1.0
     self.cohmult = 0.1
+    self.premult = 3.0
+    # Set random values
+    self.x = random.random()*self.r 
+    self.y = random.random()*self.r
+    self.vx = random.random()*self.maxspeed
+    self.vy = random.random()*self.maxspeed
 
   def borders(self):
     if self.x < 0: self.x = self.r + self.x
@@ -28,17 +33,22 @@ class Boid:
     self.y = self.y + self.vy
     self.borders()
 
-  def update(self,others):
-    self.flock(others)
+  def update(self,others,pred=None):
+    self.flock(others,pred)
     self.move()
 
-  def flock(self,others):
+  def flock(self,others,pred):
    sep = self.separate(others)
    ali = self.align(others)
    coh = self.cohesion(others)
+   if pred != None:
+     pre = self.hide(pred)
+   else: pre = [0,0]
    # Add contributions
-   correctionx = self.sepmult*sep[0] + self.almult*ali[0] + self.cohmult*coh[0]
-   correctiony = self.sepmult*sep[1] + self.almult*ali[1] + self.cohmult*coh[1] 
+   correctionx = self.sepmult*sep[0] + self.almult*ali[0]  \
+                    + self.cohmult*coh[0] + self.premult*pre[0]
+   correctiony = self.sepmult*sep[1] + self.almult*ali[1]  \
+                    + self.cohmult*coh[1] + self.premult*pre[1]
    self.vx = self.vx + correctionx
    self.vy = self.vy + correctiony
    # Normalize to maxspeed
@@ -56,11 +66,11 @@ class Boid:
     # Returns normalized distance vector
     xdist = min(abs(self.x-other.x),self.r-abs(self.x-other.x))
     ydist = min(abs(self.y-other.y),self.r-abs(self.y-other.y))
-    if self.x > other.x and self.r - self.x > self.dd:
+    if self.x > other.x and self.r-abs(self.x-other.x) > abs(self.x-other.x):
       dx = -xdist
     else:
       dx = xdist
-    if self.y > other.y and self.r - self.y > self.dd:
+    if self.y > other.y and self.r-abs(self.y-other.y) > abs(self.y-other.y):
       dy = -ydist
     else:
       dy = ydist
@@ -126,7 +136,9 @@ class Boid:
       xavg = xavg / count
       yavg = yavg / count
       # Create ghost boid representing the others
-      ghost = Boid(xavg,yavg,0,0)
+      ghost = Boid()
+      ghost.x = xavg
+      ghost.y = yavg
       steerx,steery = self.distanceVector(ghost)
       l = sqrt(steerx**2+steery**2)
       steerx = steerx/l*self.maxforce
@@ -134,3 +146,20 @@ class Boid:
       steerx = steerx - self.vx
       steery = steery - self.vy
     return steerx, steery
+
+  def hide(self,pred):
+    # Steer away for any other boids within desired distance
+    steerx = 0
+    steery = 0
+    dist = self.distance(pred)
+    if dist < self.pd and dist > 0.0:
+      sx,sy = self.distanceVector(pred)
+      steerx = -sx / dist
+      steery = -sy / dist
+      l = sqrt(steerx**2+steery**2)
+      steerx = steerx/l*self.maxforce
+      steery = steery/l*self.maxforce
+      steerx = steerx - self.vx
+      steery = steery - self.vy
+    return steerx, steery
+

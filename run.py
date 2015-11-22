@@ -4,7 +4,7 @@ from flock import Flock
 import time
 
 
-myFlock = Flock(100)
+myFlock = Flock(200,predator=True)
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -21,6 +21,7 @@ for m in range (0,200):
   #time.sleep(0.02)
   for n in range(0,len(myFlock.boids)):
     ax.plot(myFlock.boids[n].x,myFlock.boids[n].y,'o',color='black')
+  ax.plot(myFlock.pred.x,myFlock.pred.y,'o',color='red')
   plt.savefig("png/"+str(m).zfill(4)+".png")
   plt.draw()
   ax.clear()
