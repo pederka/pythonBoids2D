@@ -11,6 +11,7 @@ class Flock:
     if predator:
       self.predPresent = True
       self.pred = Pred()
+    else: self.pred=None
     for n in range(0,number):
       self.boids.append(Boid())
 
