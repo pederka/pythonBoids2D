@@ -1,2 +1,2 @@
 #!/bin/bash
-ffmpeg -i png/%04d.png -sameq output.avi
+ffmpeg -i png/%04d.png -qscale 0 output.avi

@@ -15,7 +15,7 @@ plt.ylim(0,1)
 ax.get_xaxis().set_visible(False)
 ax.get_yaxis().set_visible(False)
 
-for m in range (0,200):
+for m in range (0,126):
   plt.xlim(0,1)
   plt.ylim(0,1)
   #time.sleep(0.02)

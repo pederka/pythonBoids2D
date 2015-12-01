@@ -16,6 +16,7 @@ class Boid:
     self.almult = 1.0
     self.cohmult = 0.1
     self.premult = 3.0
+    self.alpha = 0
     # Set random values
     self.x = random.random()*self.r 
     self.y = random.random()*self.r
@@ -74,6 +75,7 @@ class Boid:
       dy = -ydist
     else:
       dy = ydist
+    if dx == 0 and dy == 0: return 0,0
     return dx/sqrt(dx**2+dy**2),dy/sqrt(dx**2+dy**2)
 
   def separate(self,others):
@@ -107,7 +109,9 @@ class Boid:
     steery = 0
     for n in range(0,len(others)):
       dist = self.distance(others[n])
-      if dist < self.nd and dist > 0.0:
+      sx,sy = self.distanceVector(others[n])
+      if dist < self.nd and dist > 0.0 and \
+            (sx*self.vx+sy*self.vy)/(self.vx**2+self.vy**2) > self.alpha:
         count = count + 1
         steerx = steerx + others[n].vx
         steery = steery + others[n].vy
@@ -128,7 +132,9 @@ class Boid:
     yavg = 0
     for n in range(0,len(others)):
       dist = self.distance(others[n])
-      if dist < self.nd and dist > 0.0:
+      sx,sy = self.distanceVector(others[n])
+      if dist < self.nd and dist > 0.0 and \
+            (sx*self.vx+sy*self.vy)/(self.vx**2+self.vy**2) > self.alpha:
         count = count + 1
         xavg = xavg + others[n].x
         yavg = yavg + others[n].y
