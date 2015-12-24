@@ -11,8 +11,8 @@ class Bird(Boid):
     self.sepmult = 1.5
     self.almult = 1.0
     self.cohmult = 0.1
-    self.premult = 3.0
-    self.alpha = 0 # Parameter for cone of vision
+    self.premult = 3.5
+    self.alpha = -1 # Parameter for cone of vision
 
   def update(self,others,pred=None):
     ''' Applies rules of behavior and updates positions
