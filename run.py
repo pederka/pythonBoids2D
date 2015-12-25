@@ -1,6 +1,15 @@
+'''Simple script for running the program'''
 from flock import Flock
 
-myFlock = Flock(150,predator=True)
-for m in range (0,200):
-  myFlock.update()
-  myFlock.drawPlot(m)
+# Parameters
+time_steps = 200
+number_of_birds = 150
+is_predator_present = True
+
+# Initialize flock
+myFlock = Flock(number_of_birds, predator=is_predator_present)
+
+# Run simulation
+for m in range(0, time_steps):
+    myFlock.update()
+    myFlock.drawPlot(m)
